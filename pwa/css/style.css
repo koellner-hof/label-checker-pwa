@@ -10,14 +10,28 @@ html,
   margin: 0;
   padding: 0;
   width: 100%;
-}
-
-/* Center the content in the browser window */
-.container {
-  margin: auto;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   text-align: center;
 }
 
 .title {
   font-size: 3rem;
+}
+
+nav,
+.nav {
+  flex-grow: 1;
+  border-bottom: .2rem solid #202020;
+}
+
+main,
+.main {
+  flex-grow: 50;
+}
+
+footer,
+.footer {
+  flex-grow: 1;
 }
