@@ -1,3 +1,5 @@
+let previousScannedCode = undefined;
+
 window.onload = () => {
   'use strict';
 
@@ -7,22 +9,40 @@ window.onload = () => {
   }
 }
 
-function decodeOnce(codeReader, selectedDeviceId) {
-  codeReader.decodeFromInputVideoDevice(selectedDeviceId, 'video').then((result) => {
-    console.log(result)
-    document.getElementById('result').textContent = result.text
-  }).catch((err) => {
-    console.error(err)
-    document.getElementById('result').textContent = err
-  })
+function doReset(codeReader) {
+  console.log('Reset.');
+  codeReader.reset();
+  setAlertVisibility('alert-reset');
+}
+
+function handleResult(result) {
+  console.log('Found code!', result)
+  if ((typeof previousScannedCode !== 'undefined') && (previousScannedCode.text === result.text)) {
+    // Code was read previously
+    console.log('Read previous code')
+  }
+  else {
+    document.getElementById('processing-text').innerText = "Code gelesen: " + result.text + ". Prüfe Status...";
+  }
+  previousScannedCode = result;
+}
+
+function setAlertVisibility(alertID) {
+  var alertList = document.querySelectorAll('.alert')
+  alertList.forEach(function (alert) {
+    if (!alert.classList.contains('visually-hidden')) {  // Set all alerts invisible
+      alert.classList.add('visually-hidden');
+    }
+    if (alert.id === alertID) {  // Make requested alert visible
+      alert.classList.remove('visually-hidden');
+    }
+})
 }
 
 function decodeContinuously(codeReader, selectedDeviceId) {
   codeReader.decodeFromInputVideoDeviceContinuously(selectedDeviceId, 'video', (result, err) => {
     if (result) {
-      // properly decoded qr code
-      console.log('Found QR code!', result)
-      document.getElementById('result').textContent = result.text
+      handleResult(result);
     }
 
     if (err) {
@@ -37,7 +57,7 @@ function decodeContinuously(codeReader, selectedDeviceId) {
       //  - FormatException
 
       if (err instanceof ZXing.NotFoundException) {
-        console.log('No QR code found.')
+        console.log('No code found.')
       }
 
       if (err instanceof ZXing.ChecksumException) {
@@ -53,7 +73,7 @@ function decodeContinuously(codeReader, selectedDeviceId) {
 
 window.addEventListener('load', function () {
   let selectedDeviceId;
-  const codeReader = new ZXing.BrowserQRCodeReader()
+  const codeReader = new ZXing.BrowserDatamatrixCodeReader()
   console.log('ZXing code reader initialized')
 
   codeReader.getVideoInputDevices()
@@ -71,28 +91,16 @@ window.addEventListener('load', function () {
         sourceSelect.onchange = () => {
           selectedDeviceId = sourceSelect.value;
         };
-
-        const sourceSelectPanel = document.getElementById('sourceSelectPanel')
-        sourceSelectPanel.style.display = 'block'
       }
 
       document.getElementById('startButton').addEventListener('click', () => {
-
-        const decodingStyle = document.getElementById('decoding-style').value;
-
-        if (decodingStyle == "once") {
-          decodeOnce(codeReader, selectedDeviceId);
-        } else {
-          decodeContinuously(codeReader, selectedDeviceId);
-        }
-
         console.log(`Started decode from camera with id ${selectedDeviceId}`)
+        setAlertVisibility('alert-processing');
+        decodeContinuously(codeReader, selectedDeviceId);
       })
 
       document.getElementById('resetButton').addEventListener('click', () => {
-        codeReader.reset()
-        document.getElementById('result').textContent = '';
-        console.log('Reset.')
+        doReset(codeReader);
       })
 
     })

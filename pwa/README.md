@@ -1,1 +1,2 @@
 Thanks to [@jamesjohnson280](https://github.com/jamesjohnson280/hello-pwa) for providing the HelloWorld PWA as a basis for this project.
+Additional thanks to [@zxing-js](https://github.com/zxing-js/library) for providing the scanner library.

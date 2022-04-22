@@ -15,23 +15,3 @@ html,
   align-items: center;
   text-align: center;
 }
-
-.title {
-  font-size: 3rem;
-}
-
-nav,
-.nav {
-  flex-grow: 1;
-  border-bottom: .2rem solid #202020;
-}
-
-main,
-.main {
-  flex-grow: 50;
-}
-
-footer,
-.footer {
-  flex-grow: 1;
-}
